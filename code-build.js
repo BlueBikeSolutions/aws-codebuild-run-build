@@ -16,22 +16,22 @@ module.exports = {
   logName,
 };
 
-function runBuild() {
+function runBuild(waitForBuild) {
   // get a codeBuild instance from the SDK
   const sdk = buildSdk();
 
   // Get input options for startBuild
   const params = inputs2Parameters(githubInputs());
 
-  return build(sdk, params);
+  return build(sdk, params, waitForBuild);
 }
 
-async function build(sdk, params) {
+async function build(sdk, params, waitForBuild) {
   // Start the build
   const start = await sdk.codeBuild.startBuild(params).promise();
 
   // Wait for the build to "complete"
-  return waitForBuildEndTime(sdk, start.build);
+  return waitForBuild ? waitForBuildEndTime(sdk, start.build) : start.build;
 }
 
 async function waitForBuildEndTime(
